@@ -1,0 +1,35 @@
+server:
+  port: 7777
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/cm_blog?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 403630
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #redis
+  redis:
+    port: 6379
+    host: 47.109.59.20
+    password: 403630
+  servlet:
+#    设置文件传输大小限制
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 5MB
+  main:
+#    允许循环依赖
+    allow-circular-references: true
+mybatis-plus:
+  configuration:
+    # 日志(部署后应该关闭，防止crud日志打印过多)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+#      采用逻辑删除(这里的删除字段为del_Flag，对应实体类的属性名为delFlag)
+      logic-delete-field: delFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+#      主键id自增
+      id-type: auto
+#      mapper和xml的映射配置：如果不配置会查询失败
+#  mapper-locations: "com/cm/mapper/*.xml"

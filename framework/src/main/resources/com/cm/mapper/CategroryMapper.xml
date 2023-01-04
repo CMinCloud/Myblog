@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cm.mapper.CategoryMapper">
+
+    <!--    <resultMap id="" type="">
+            <result column="" property=""></result>
+        </resultMap>-->
+
+    <select id="selectCategoryList" resultType="com.cm.domain.entity.Category">
+        select *
+        from cm_category
+        where id IN
+              (
+                  select distinct category_id from cm_article
+                  where `status` = 0 and `del_flag` = 0
+              )
+          and `status` = 0;
+    </select>
+
+</mapper>
