@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cm.constants.SystemConstants;
 import com.cm.domain.entity.Article;
 import com.cm.domain.entity.Category;
-import com.cm.domain.entity.ResponseResult;
-import com.cm.domain.params.ArticleListParam;
+import com.cm.domain.params.PageParam;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.ArticleDetailVo;
 import com.cm.domain.vo.ArticleVo;
 import com.cm.domain.vo.HotArticleVo;
@@ -59,11 +59,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public ResponseResult getArticleList(ArticleListParam articleParam) {
+    public ResponseResult getArticleList(PageParam articleParam) {
 //        1.查询文章列表
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         //必须是正式文章
-        Long categoryId = articleParam.getCategoryId();
+        Long categoryId = articleParam.getId();
         queryWrapper.eq(Article::getStatus, SystemConstants.ARTICLE_STATUS_NORMAL)
 //                判断是否要根据categoryId查询文章列表
                 .eq(Objects.nonNull(categoryId) && categoryId > 0, Article::getCategoryId, categoryId)

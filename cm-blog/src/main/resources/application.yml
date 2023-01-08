@@ -29,7 +29,11 @@ mybatis-plus:
       logic-delete-field: delFlag
       logic-delete-value: 1
       logic-not-delete-value: 0
-#      主键id自增
+#      主键id自增:这里会设置雪花算法
       id-type: auto
 #      mapper和xml的映射配置：如果不配置会查询失败
 #  mapper-locations: "com/cm/mapper/*.xml"
+# 七牛云的密钥
+qiniu:
+  accessKey: GShC0skLnphH_iZ-D-RxNgk5NncuuCGbDrItq3lc
+  accessSecretKey: 0_sm4-3ZsEBeEquIUPECnQUNA-FGmP74_6kK8WC5

@@ -1,6 +1,6 @@
 package com.cm.controller;
 
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.service.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

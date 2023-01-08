@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cm.constants.SystemConstants;
 import com.cm.domain.entity.Link;
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.LinkVo;
 import com.cm.mapper.LinkMapper;
 import com.cm.service.LinkService;

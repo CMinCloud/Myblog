@@ -2,7 +2,7 @@ package com.cm.filter;
 
 import com.alibaba.fastjson.JSON;
 import com.cm.domain.entity.LoginUser;
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.utils.JwtUtil;
 import com.cm.utils.RedisCache;
@@ -58,7 +58,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         LoginUser loginUser = redisCache.getCacheObject(key);   //这里定义的是泛型方法，可以直接获取LoginUser
         if (Objects.isNull(loginUser)) {
             // 获取值为空
-            throw new RuntimeException("当前用户未登录！");
+//            throw new RuntimeException("当前用户未登录！");
+            ResponseResult result = ResponseResult.errorResult(AppHttpCodeEnum.NEED_LOGIN);
+            WebUtils.renderString(response, JSON.toJSONString(result));     //返回给前端
+            return;
         }
 //        4.封装Authentication(调用三参数方法，会设置该用户已认证)  ：这里封装的是完整体的usernamePasswordAuthenticationToken
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken

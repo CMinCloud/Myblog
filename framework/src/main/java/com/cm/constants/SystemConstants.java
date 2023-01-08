@@ -19,4 +19,12 @@ public class SystemConstants
 //    友链审核通过
     public static final String LINK_STATUS_NORMAL = "0";
 
+//    跟评论rootId值
+    public static final String COMMENT_ROOT = "-1";
+
+//    评论类型
+    public static final String ARTICLE_COMMENT_TYPE = "0";
+
+    public static final String LINK_COMMENT_TYPE = "1";
+
 }

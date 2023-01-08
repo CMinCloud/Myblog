@@ -1,12 +1,12 @@
 package com.cm.service.impl;
 
 import com.cm.domain.entity.LoginUser;
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.entity.User;
 import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.vo.BlogUserLoginVo;
-import com.cm.domain.vo.SystemException;
-import com.cm.domain.vo.UserInfoVo;
+import com.cm.domain.entity.SystemException;
+import com.cm.domain.vo.userInfoVo;
 import com.cm.service.LoginService;
 import com.cm.utils.BeanCopyUtils;
 import com.cm.utils.JwtUtil;
@@ -55,8 +55,8 @@ public class LoginServiceImpl implements LoginService {
         redisCache.setCacheObject("blogLogin_" + userId, loginUser);
 
 //        返回BlogUserLoginVo对象
-        UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
-        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfoVo,jwt);
+        userInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), userInfoVo.class);
+        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfo,jwt);
         return new ResponseResult(200, "登录认证成功!", blogUserLoginVo);     //返回token值和用户信息
     }
 
@@ -71,6 +71,6 @@ public class LoginServiceImpl implements LoginService {
         Long userId = loginUser.getUser().getId();
         //删除redis中的用户信息
         redisCache.deleteObject("blogLogin_"+userId);
-        return ResponseResult.okResult();
+        return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

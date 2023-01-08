@@ -1,4 +1,4 @@
-package com.cm.domain.vo;
+package com.cm.domain.entity;
 
 
 import com.cm.domain.enums.AppHttpCodeEnum;

@@ -2,6 +2,8 @@ package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cm.domain.entity.User;
+import com.cm.domain.vo.ResponseResult;
+import com.cm.domain.vo.userInfoVo;
 
 /**
  * 用户表(User)表服务接口
@@ -11,5 +13,10 @@ import com.cm.domain.entity.User;
  */
 public interface UserService extends IService<User> {
 
+    ResponseResult userInfo();
+
+    ResponseResult updateUserInfo(userInfoVo userInfoVo);
+
+    ResponseResult register(User user);
 }
 

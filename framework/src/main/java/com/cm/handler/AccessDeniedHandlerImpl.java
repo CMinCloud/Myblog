@@ -1,7 +1,7 @@
 package com.cm.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.utils.WebUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;

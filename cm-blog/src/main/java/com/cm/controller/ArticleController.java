@@ -1,7 +1,7 @@
 package com.cm.controller;
 
-import com.cm.domain.entity.ResponseResult;
-import com.cm.domain.params.ArticleListParam;
+import com.cm.domain.params.PageParam;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class ArticleController {
     @GetMapping("/articleList")
 //    前后端参数名一致就不需要用@PathVariable
     public ResponseResult getArticleListInteger(Integer pageNum, Integer pageSize, Long categoryId) {
-        ArticleListParam articleParam = new ArticleListParam(pageNum,pageSize,categoryId);
+        PageParam articleParam = new PageParam(categoryId,pageNum,pageSize);
         return articleService.getArticleList(articleParam);
     }
 

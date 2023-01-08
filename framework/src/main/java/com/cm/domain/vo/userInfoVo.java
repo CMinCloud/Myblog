@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class UserInfoVo {
+public class userInfoVo {
 
     //主键
     private Long id;

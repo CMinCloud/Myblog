@@ -43,7 +43,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
                 .antMatchers("/login").anonymous()
-                .antMatchers("/article/hotArticleList").authenticated() //认证之后才能访问
+                .antMatchers("/logout").authenticated()     //认证之后才能访问
+                .antMatchers("/user/userInfo").authenticated()
                 // 除上面外的所有请求全部不需要认证即可访问
                 .anyRequest().permitAll();
 
@@ -54,7 +55,7 @@ public class SecurityConfig {
 //        在用户登录过滤器之前进行过滤校验
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.logout().disable();
+        http.logout().disable();        //关闭默认注销功能，否则自定义的logout可能退出失败
         //允许跨域
         http.cors();
         return http.build();

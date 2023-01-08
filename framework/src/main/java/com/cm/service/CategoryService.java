@@ -2,7 +2,7 @@ package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cm.domain.entity.Category;
-import com.cm.domain.entity.ResponseResult;
+import com.cm.domain.vo.ResponseResult;
 
 /**
  * 分类表(Category)表服务接口
