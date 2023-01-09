@@ -16,6 +16,7 @@ import com.cm.mapper.ArticleMapper;
 import com.cm.service.ArticleService;
 import com.cm.service.CategoryService;
 import com.cm.utils.BeanCopyUtils;
+import com.cm.utils.RedisCache;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private RedisCache redisCache;
 
     /*    */
 
@@ -102,8 +106,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleDetailVo articleDetail = new ArticleDetailVo();
 //        拷贝数据
         BeanUtils.copyProperties(article, articleDetail);
-
         return ResponseResult.okResult(articleDetail);
     }
+
+    //    将修改操作在缓存中进行，查询不变还是查询数据库
+    @Override
+    public ResponseResult updateViewCountById(Long id) {
+//        缓存更新失败暂时不报错，在控制台打印
+        if (!redisCache.updateSetSortedSet(id)) {
+            System.out.println("-----浏览量缓存更新失败-----");
+        }
+        return ResponseResult.okResult();
+    }
+
 
 }

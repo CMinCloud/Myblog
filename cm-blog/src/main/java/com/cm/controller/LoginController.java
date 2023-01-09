@@ -1,6 +1,7 @@
 package com.cm.controller;
 
 
+import com.cm.common.aop.LogAnnotation;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.entity.User;
 import com.cm.domain.enums.AppHttpCodeEnum;
@@ -20,6 +21,7 @@ public class LoginController {
 
 
     @PostMapping("/login")
+    @LogAnnotation(module = "登录模块",operation = "登录操作")
     public ResponseResult login(@RequestBody User user){
         if(!StringUtils.hasText(user.getUserName())){
 //            提示必须要传输用户名

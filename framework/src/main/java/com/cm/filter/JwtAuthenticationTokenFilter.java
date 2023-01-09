@@ -54,7 +54,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 //        3.由userId从redis中获取用户信息
-        String key = "blogLogin_" + userId;
+        String key = "BlogLogin:" + userId;
         LoginUser loginUser = redisCache.getCacheObject(key);   //这里定义的是泛型方法，可以直接获取LoginUser
         if (Objects.isNull(loginUser)) {
             // 获取值为空

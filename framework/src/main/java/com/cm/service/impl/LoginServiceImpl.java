@@ -52,7 +52,7 @@ public class LoginServiceImpl implements LoginService {
         map.put("token", jwt);
 //        这里缓存存入loginUser的原因:包含完整的用户信息+用户权限
 //        每次请求都需要判定权限,所以封装在缓存中
-        redisCache.setCacheObject("blogLogin_" + userId, loginUser);
+        redisCache.setCacheObject("BlogLogin:" + userId, loginUser);
 
 //        返回BlogUserLoginVo对象
         userInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), userInfoVo.class);

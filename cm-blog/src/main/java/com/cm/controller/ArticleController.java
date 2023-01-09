@@ -1,5 +1,6 @@
 package com.cm.controller;
 
+import com.cm.common.aop.LogAnnotation;
 import com.cm.domain.params.PageParam;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.service.ArticleService;
@@ -23,8 +24,9 @@ public class ArticleController {
     }
 
     @GetMapping("/articleList")
+    @LogAnnotation(module = "文章模块",operation = "文章列表")
 //    前后端参数名一致就不需要用@PathVariable
-    public ResponseResult getArticleListInteger(Integer pageNum, Integer pageSize, Long categoryId) {
+    public ResponseResult getArticleList(Integer pageNum, Integer pageSize, Long categoryId) {
         PageParam articleParam = new PageParam(categoryId,pageNum,pageSize);
         return articleService.getArticleList(articleParam);
     }
@@ -32,5 +34,10 @@ public class ArticleController {
     @GetMapping("/{id}")
     public ResponseResult getArticleDetail(@PathVariable("id") Long id){
        return articleService.getArticleDetail(id);
+    }
+
+    @PutMapping("updateViewCount/{id}")
+    public ResponseResult updateViewCountById(@PathVariable("id") Long id){
+        return articleService.updateViewCountById(id);
     }
 }
