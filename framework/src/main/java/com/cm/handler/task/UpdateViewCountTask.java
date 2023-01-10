@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableScheduling   // 开启定时任务
-public class refreshRedisScheduleTask {
+public class UpdateViewCountTask {
 
     @Autowired
     private RedisCache redisCache;
 
-    @Scheduled(cron = "0 0/1 * * * ? ")
+    @Scheduled(cron = "0 0/10 * * * ? ")
     public void testJob() {
         //要执行的代码
         redisCache.Synchronize2Database();

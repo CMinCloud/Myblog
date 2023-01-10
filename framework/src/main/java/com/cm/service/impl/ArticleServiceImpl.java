@@ -102,8 +102,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (category != null) {
             article.setCategoryName(category.getName());
         }
-
         ArticleDetailVo articleDetail = new ArticleDetailVo();
+        Long viewCount = redisCache.getSetSortedSetById(id);
+        articleDetail.setViewCount(viewCount);
 //        拷贝数据
         BeanUtils.copyProperties(article, articleDetail);
         return ResponseResult.okResult(articleDetail);

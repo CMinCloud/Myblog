@@ -12,24 +12,28 @@ spring:
     host: 47.109.59.20
     password: 403630
   servlet:
-#    设置文件传输大小限制
+    #    设置文件传输大小限制
     multipart:
       max-file-size: 2MB
       max-request-size: 5MB
   main:
-#    允许循环依赖
+    #    允许循环依赖
     allow-circular-references: true
+  #    springboot2.6版本后修改了路径匹配机制，需要使用该配置
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 mybatis-plus:
   configuration:
     # 日志(部署后应该关闭，防止crud日志打印过多)
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-#      采用逻辑删除(这里的删除字段为del_Flag，对应实体类的属性名为delFlag)
+      #      采用逻辑删除(这里的删除字段为del_Flag，对应实体类的属性名为delFlag)
       logic-delete-field: delFlag
       logic-delete-value: 1
       logic-not-delete-value: 0
-#      主键id自增:这里会设置雪花算法
+      #      主键id自增:这里会设置雪花算法
       id-type: auto
 #      mapper和xml的映射配置：如果不配置会查询失败
 #  mapper-locations: "com/cm/mapper/*.xml"
