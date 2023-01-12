@@ -38,9 +38,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private CommentMapper commentMapper;
-
 
     //    查询评论列表使用一个统一的sql来完成
     @Override
@@ -56,8 +53,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<Comment> comments = page.getRecords();*/
 //       修改limit起始位置为*（页码数-1）*size
         commentParam.setPageNum((commentParam.getPageNum() - 1) * commentParam.getPageSize());
-        List<Comment> comments = commentMapper.getCommentList(commentParam);
-        Long total = commentMapper.getCommentTotal(commentParam);
+        List<Comment> comments = baseMapper.getCommentList(commentParam);
+        Long total = baseMapper.getCommentTotal(commentParam);
 //        封装为Vo对象
         List<CommentVo> commentVos = toCommentVoList(comments);
         for (CommentVo commentVo : commentVos) {

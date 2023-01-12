@@ -5,6 +5,8 @@ import com.cm.domain.entity.User;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.userInfoVo;
 
+import java.util.List;
+
 /**
  * 用户表(User)表服务接口
  *
@@ -18,5 +20,13 @@ public interface UserService extends IService<User> {
     ResponseResult updateUserInfo(userInfoVo userInfoVo);
 
     ResponseResult register(User user);
+
+    ResponseResult SystemUserInfo();
+
+    List<String> getPermissions(Long id);
+
+    List<String> getAdminPermissions();
+
+    List<String> getRoles(Long id);
 }
 

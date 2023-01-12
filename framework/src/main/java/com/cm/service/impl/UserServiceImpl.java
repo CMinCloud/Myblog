@@ -2,10 +2,12 @@ package com.cm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.cm.domain.entity.LoginUser;
 import com.cm.domain.entity.SystemException;
 import com.cm.domain.entity.User;
 import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.vo.ResponseResult;
+import com.cm.domain.vo.SystemUserVo;
 import com.cm.domain.vo.userInfoVo;
 import com.cm.mapper.UserMapper;
 import com.cm.service.UserService;
@@ -16,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * 用户表(User)表服务实现类
@@ -68,6 +72,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return ResponseResult.okResult();
     }
 
+    //    已登录后获取     用户信息
+    @Override
+    public ResponseResult SystemUserInfo() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        User user = loginUser.getUser();
+        userInfoVo userInfo = BeanCopyUtils.copyBean(user, userInfoVo.class);
+        SystemUserVo systemUserVo = new SystemUserVo(loginUser.getPermissions(),
+                loginUser.getRoles(), userInfo);
+//        user：userInfo.class
+        return ResponseResult.okResult(systemUserVo);
+    }
+
+    @Override
+    public List<String> getPermissions(Long id) {
+        return baseMapper.getPermissions(id);
+    }
+
+    @Override
+    public List<String> getAdminPermissions() {
+        return baseMapper.getAdminPermissions();
+    }
+
+    @Override
+    public List<String> getRoles(Long id) {
+        return baseMapper.getSystemRoles(id);
+    }
+
     public boolean registerCheck(User user) {
         String userName = user.getUserName();
         String password = user.getPassword();
@@ -93,7 +124,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new SystemException(AppHttpCodeEnum.USERNAME_EXIST);
         }
         queryWrapper.clear();
-        queryWrapper.eq(User::getNickName,nickName);
+        queryWrapper.eq(User::getNickName, nickName);
         if (count(queryWrapper) != 0) {
             throw new SystemException(AppHttpCodeEnum.NICKNAME_EXIST);
         }

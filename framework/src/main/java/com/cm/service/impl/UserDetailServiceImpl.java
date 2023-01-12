@@ -4,13 +4,16 @@ package com.cm.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cm.domain.entity.LoginUser;
 import com.cm.domain.entity.User;
+import com.cm.mapper.UserMapper;
 import com.cm.service.UserService;
+import com.cm.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -44,12 +47,16 @@ public class UserDetailServiceImpl implements UserDetailsService {
         } else if ("1".equals(user.getStatus())) {
             throw new UsernameNotFoundException("该账号已被停用,请联系管理员");
         }
-
-/*//        暂时写死
 //        根据userId获取用户权限
-            List<String> permissions = menuMapper.selectPermsByUser_Id(user.getId());*/
+        List<String> permissions = null;
+        if (user.getId() == 1L) {
+            permissions = userService.getAdminPermissions();
+        } else {
+            permissions = userService.getPermissions(user.getId());
+        }
+        List<String> roles = userService.getRoles(user.getId());
 //        todo 获取用户权限
-        return new LoginUser(user);
+        return new LoginUser(user, permissions, roles);
     }
 }
 

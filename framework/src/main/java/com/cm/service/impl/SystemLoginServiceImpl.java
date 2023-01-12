@@ -1,11 +1,11 @@
 package com.cm.service.impl;
 
 import com.cm.domain.entity.LoginUser;
-import com.cm.domain.vo.ResponseResult;
+import com.cm.domain.entity.SystemException;
 import com.cm.domain.entity.User;
 import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.vo.BlogUserLoginVo;
-import com.cm.domain.entity.SystemException;
+import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.userInfoVo;
 import com.cm.service.LoginService;
 import com.cm.utils.BeanCopyUtils;
@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service("BlogLoginService")
-public class LoginServiceImpl implements LoginService {
+@Service("SystemLoginService")
+public class SystemLoginServiceImpl implements LoginService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -52,25 +52,25 @@ public class LoginServiceImpl implements LoginService {
         map.put("token", jwt);
 //        这里缓存存入loginUser的原因:包含完整的用户信息+用户权限
 //        每次请求都需要判定权限,所以封装在缓存中
-        redisCache.setCacheObject("BlogLogin:" + userId, loginUser);
-
+        redisCache.setCacheObject("AdminLogin:" + userId, loginUser);
+/*
 //        返回BlogUserLoginVo对象
         userInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), userInfoVo.class);
-        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfo,jwt);
-        return new ResponseResult(200, "登录认证成功!", blogUserLoginVo);     //返回token值和用户信息
+        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfo,jwt);*/
+        return ResponseResult.okResult(map);     //返回token值和用户信息
     }
 
     @Override
     public ResponseResult logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null){
+        if (authentication == null) {
             throw new SystemException(AppHttpCodeEnum.NEED_LOGIN);
         }
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //获取userid
         Long userId = loginUser.getUser().getId();
         //删除redis中的用户信息
-        redisCache.deleteObject("blogLogin_"+userId);
+        redisCache.deleteObject("blogLogin_" + userId);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }

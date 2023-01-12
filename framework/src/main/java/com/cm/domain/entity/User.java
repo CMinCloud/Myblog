@@ -3,6 +3,7 @@ package com.cm.domain.entity;
 import java.util.Date;
 import java.io.Serializable;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @TableName("sys_user")
 public class User  {
     //主键
+    @TableId
     private Long id;
     //用户名
     private String userName;

@@ -4,13 +4,11 @@ package com.cm.common.aop;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -40,9 +38,9 @@ public class LogAspect {
         Object result = null;
 //        执行方法
         try {
-            handleBefore(pt);
+            handleBefore(pt);       // 打印请求参数
             result = pt.proceed();
-            handleAfter(result);
+            handleAfter(result);    //打印返回值
         } finally {
 //            结束后换行,调用系统定义的换行符，不用写死
             log.info("=======End=======" + System.lineSeparator());
@@ -50,8 +48,6 @@ public class LogAspect {
 //      计算执行时间
         long time = System.currentTimeMillis() - beginTime;
         log.info("Time expended       : {}ms", time);
-//      保存日志
-//        recordLog(pt, time);
         return result;
     }
 
@@ -113,7 +109,7 @@ public class LogAspect {
     }
 
     public LogAnnotation getLogAnnotation(ProceedingJoinPoint joinPoint) {
-//        获取Signature的实现类，目的接口是接在方法上的，因此获取方法类型的实现类
+//        获取Signature的实现类，目的接口是接在方法上的，因此获取方法类型的实现类MethodSignature
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();    //获取被增强的方法
         return method.getAnnotation(LogAnnotation.class);//获取被增强方法的注解对象

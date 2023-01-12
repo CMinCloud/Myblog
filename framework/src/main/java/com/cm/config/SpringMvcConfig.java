@@ -27,7 +27,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
         // 设置允许跨域的路径
         registry.addMapping("/**")
                 // 设置允许跨域请求的域名
-                .allowedOriginPatterns("http://localhost:8080")
+                .allowedOriginPatterns("*")
                 // 是否允许cookie
 //                .allowCredentials(true)    // 不关闭这个前台会因为cookie报错
                 // 设置允许的请求方式

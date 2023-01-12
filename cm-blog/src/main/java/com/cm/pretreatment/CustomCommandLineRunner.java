@@ -1,4 +1,4 @@
-package com.cm.handler.pretreatment;
+package com.cm.pretreatment;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.cm.domain.entity.Article;
