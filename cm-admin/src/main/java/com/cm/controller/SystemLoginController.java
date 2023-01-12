@@ -8,7 +8,6 @@ import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.vo.MenuVo;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.RoutersVo;
-import com.cm.domain.entity.Menu;
 import com.cm.service.LoginService;
 import com.cm.service.MenuService;
 import com.cm.utils.SecurityUtils;
@@ -39,11 +38,16 @@ public class SystemLoginController {
     }
 
     @GetMapping("getRouters")
-    public ResponseResult<RoutersVo> getRouters(){
+    public ResponseResult getRouters() {
         Long userId = SecurityUtils.getUserId();
         //查询menu 结果是tree的形式
         List<MenuVo> menus = menuService.selectRouterMenuTreeByUserId(userId);
         //封装数据返回
         return ResponseResult.okResult(new RoutersVo(menus));
+    }
+
+    @PostMapping("/user/logout")
+    public ResponseResult logout() {
+        return loginService.logout();
     }
 }
