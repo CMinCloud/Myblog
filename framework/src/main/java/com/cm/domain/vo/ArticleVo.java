@@ -23,4 +23,16 @@ public class ArticleVo {
     //创建时间
 //    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+//    分页查询文章列表新增属性
+    private Long categoryId;
+
+    private String content;
+
+   //是否置顶（0否，1是）
+    private String isTop;
+    //状态（0已发布，1草稿）
+    private String status;
+
+
 }

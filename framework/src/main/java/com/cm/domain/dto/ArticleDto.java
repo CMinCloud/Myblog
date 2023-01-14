@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -31,6 +30,6 @@ public class ArticleDto {
     //是否允许评论 1是，0否
     private String isComment;
 
-    private List<Long> tags;
+    private List<Long>  tags;
 
 }

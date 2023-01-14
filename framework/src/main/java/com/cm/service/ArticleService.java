@@ -2,10 +2,12 @@ package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cm.domain.dto.ArticleDto;
+import com.cm.domain.dto.ArticleListDto;
 import com.cm.domain.entity.Article;
 import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.ResponseResult;
 
+import java.util.List;
 
 
 public interface ArticleService extends IService<Article> {
@@ -19,4 +21,12 @@ public interface ArticleService extends IService<Article> {
     ResponseResult updateViewCountById(Long id);
 
     ResponseResult publishArticle(ArticleDto articleDto);
+
+    ResponseResult pageList(ArticleListDto articleListDto);
+
+    ResponseResult getArticleDetail4Update(Long articleId);
+
+    ResponseResult updateArticle(Article article);
+
+    ResponseResult deleteById(List<Long> ids);
 }

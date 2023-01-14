@@ -1,11 +1,14 @@
 package com.cm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cm.constants.SystemConstants;
 import com.cm.domain.dto.ArticleDto;
+import com.cm.domain.dto.ArticleListDto;
 import com.cm.domain.entity.Article;
+import com.cm.domain.entity.ArticleTag;
 import com.cm.domain.entity.Category;
 import com.cm.domain.dto.PageParam;
 import com.cm.domain.entity.SystemException;
@@ -17,9 +20,11 @@ import com.cm.domain.vo.HotArticleVo;
 import com.cm.domain.vo.PageVo;
 import com.cm.mapper.ArticleMapper;
 import com.cm.service.ArticleService;
+import com.cm.service.ArticleTagService;
 import com.cm.service.CategoryService;
 import com.cm.utils.BeanCopyUtils;
 import com.cm.utils.RedisCache;
+import kotlin.jvm.internal.Lambda;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +41,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private ArticleTagService articleTagService;
 
     @Autowired
     private RedisCache redisCache;
@@ -135,13 +144,74 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             save(article);
 //            再将刚刚新增的article查出来，获取id
 //            todo:如果文章还是草稿，就不用将article和tag的关系插入表中
-            Long id = article.getId();
+            Long articleId = article.getId();
             List<Long> tags = articleDto.getTags();
-            for (Long tagId : tags) {
-                baseMapper.linkArticle2Tags(id, tagId);
-            }
+
+            List<ArticleTag> articleTags = tags.stream()
+                    .map(tagId -> new ArticleTag(articleId, tagId)).collect(Collectors.toList());
+//            新增article-tag的映射
+            articleTagService.saveBatch(articleTags);
         }
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult pageList(ArticleListDto articleListDto) {
+        String title = articleListDto.getTitle();
+        String summary = articleListDto.getSummary();
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(title), Article::getTitle, title);
+        queryWrapper.like(StringUtils.hasText(summary), Article::getSummary, summary);
+        Page<Article> articlePage = new Page<>(articleListDto.getPageNum(), articleListDto.getPageSize());
+        Page<Article> page = page(articlePage, queryWrapper);
+        List<ArticleVo> articleVoList = toArticleVoList(page.getRecords());
+        PageVo pageVo = new PageVo(articleVoList, page.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
+
+    @Override
+    public ResponseResult getArticleDetail4Update(Long articleId) {
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId, articleId);
+        List<ArticleTag> articleTags = articleTagService.list(queryWrapper);
+        List<Long> tags = articleTags.stream().map(ArticleTag::getTagId).collect(Collectors.toList());
+        Article article = getById(articleId);
+        article.setTags(tags);
+        return ResponseResult.okResult(article);
+    }
+
+    @Override
+    public ResponseResult updateArticle(Article article) {
+        try {
+            boolean updated = updateById(article);
+        } catch (Exception e) {
+            throw new SystemException(AppHttpCodeEnum.SYSTEM_ERROR);
+        }
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult deleteById(List<Long> ids) {
+        boolean deleted = false;
+        if (ids.size() == 1) {
+//            只删除一个标签
+            deleted = removeById(ids.get(0));
+        }
+//        批量删除
+        deleted = removeByIds(ids);
+//        同时删除cm_article_tag中tag和article的关联
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(ArticleTag::getArticleId, ids);
+        boolean deletedTag = articleTagService.remove(queryWrapper);
+        if (deleted && deletedTag)
+            return ResponseResult.okResult();
+        else
+            return ResponseResult.errorResult(556, "删除文章失败");
+    }
+
+    public List<ArticleVo> toArticleVoList(List<Article> articleList) {
+        return BeanCopyUtils.copyBeanList(articleList, ArticleVo.class);
     }
 
     private Boolean checkIsLegal(ArticleDto articleDto) {
