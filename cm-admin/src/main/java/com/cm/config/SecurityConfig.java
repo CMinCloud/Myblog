@@ -46,7 +46,8 @@ public class SecurityConfig {
 //                .antMatchers("/logout").authenticated()     //认证之后才能访问
 //                .antMatchers("/user/userInfo").authenticated()
                 // 除上面外的所有请求全部不需要认证即可访问
-//                .anyRequest().permitAll();
+//                添加权限控制
+//                .antMatchers("/content/category/export").hasAuthority("content:category:export")
                 .anyRequest().authenticated();
 
 //        引入security的自定义异常

@@ -3,7 +3,11 @@ package com.cm.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cm.domain.dto.CategoryListDto;
 import com.cm.domain.entity.Category;
+import com.cm.domain.vo.CategoryVo;
 import com.cm.domain.vo.ResponseResult;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 分类表(Category)表服务接口
@@ -18,5 +22,15 @@ public interface CategoryService extends IService<Category> {
     ResponseResult listAllCategories();
 
     ResponseResult listByPage(CategoryListDto categoryListDto);
+
+    ResponseResult getCategoryById(Long categoryId);
+
+    ResponseResult update(Category category);
+
+    ResponseResult addCategory(Category category);
+
+    ResponseResult deleteById(List<Long> ids);
+
+    ResponseResult export(HttpServletResponse response);
 }
 
