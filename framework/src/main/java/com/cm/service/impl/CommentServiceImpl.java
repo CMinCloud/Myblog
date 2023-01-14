@@ -2,13 +2,11 @@ package com.cm.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cm.constants.SystemConstants;
 import com.cm.domain.entity.Comment;
 import com.cm.domain.entity.SystemException;
 import com.cm.domain.enums.AppHttpCodeEnum;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.CommentVo;
 import com.cm.domain.vo.PageVo;
 import com.cm.domain.vo.ResponseResult;

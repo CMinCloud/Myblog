@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cm.constants.SystemConstants;
+import com.cm.domain.dto.ArticleDto;
 import com.cm.domain.entity.Article;
 import com.cm.domain.entity.Category;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
+import com.cm.domain.entity.SystemException;
+import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.ArticleDetailVo;
 import com.cm.domain.vo.ArticleVo;
@@ -20,6 +23,8 @@ import com.cm.utils.RedisCache;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -118,6 +123,35 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             System.out.println("-----浏览量缓存更新失败-----");
         }
         return ResponseResult.okResult();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult publishArticle(ArticleDto articleDto) {
+//        检查是否输入了title，summary，content
+        if (checkIsLegal(articleDto)) {
+            Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
+//            对于tags，需要存到对应的关联表当中去
+            save(article);
+//            再将刚刚新增的article查出来，获取id
+//            todo:如果文章还是草稿，就不用将article和tag的关系插入表中
+            Long id = article.getId();
+            List<Long> tags = articleDto.getTags();
+            for (Long tagId : tags) {
+                baseMapper.linkArticle2Tags(id, tagId);
+            }
+        }
+        return ResponseResult.okResult();
+    }
+
+    private Boolean checkIsLegal(ArticleDto articleDto) {
+        if (!StringUtils.hasText(articleDto.getContent())
+                || !StringUtils.hasText(articleDto.getSummary())
+                || !StringUtils.hasText(articleDto.getTitle())
+        ) {
+            throw new SystemException(AppHttpCodeEnum.KEYWORDS_NOT_NULL);
+        }
+        return true;
     }
 
 

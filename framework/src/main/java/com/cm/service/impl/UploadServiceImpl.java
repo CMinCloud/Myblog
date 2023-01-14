@@ -28,10 +28,11 @@ public class UploadServiceImpl implements UploadService {
         if (!checkImgFormat(originalFilename)) {
             throw new SystemException(AppHttpCodeEnum.IMG_TYPE_ERROR);
         }
-//        上传到七牛云的oss
+//        上传到七牛云的oss,自定义文件路径名
         String filePath = generateFilePath(originalFilename);
         boolean isUpload = qiniuUtils.upload(img, filePath);
         if (isUpload)
+//            返回图片的路径给前端，能够回显到页面上
             return ResponseResult.okResult(QiniuUtils.url+filePath);
         else
 //            七牛云过期也可能导致，重新申请一个就好

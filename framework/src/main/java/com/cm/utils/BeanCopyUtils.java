@@ -19,7 +19,7 @@ public class BeanCopyUtils {
 //        创建目标对象
         T result = null;
         try {
-//            这里运用到了反射：根据空参构造器创建对象
+//            反射：根据空参构造器创建对象
             result = clazz.newInstance();   //拷贝的结果存放在class类型的对象当中
 //        实现属性copy
             BeanUtils.copyProperties(source, result);

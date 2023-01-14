@@ -1,7 +1,7 @@
 package com.cm.controller;
 
 import com.cm.common.aop.LogAnnotation;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;

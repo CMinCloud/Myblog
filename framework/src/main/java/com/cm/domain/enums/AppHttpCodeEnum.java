@@ -19,7 +19,9 @@ public enum AppHttpCodeEnum {
     NICKNAME_NOT_NULL(510, "用户名不能为空"),
     PASSWORD_NOT_NULL(511, "用户名不能为空"),
     EMAIL_NOT_NULL(512, "邮箱不能为空"),
-    NICKNAME_EXIST(513, "昵称已存在");
+    NICKNAME_EXIST(513, "昵称已存在"),
+
+    KEYWORDS_NOT_NULL(555, "关键字不能为空");
 
 
     int code;

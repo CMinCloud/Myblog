@@ -1,6 +1,8 @@
 package com.cm.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +21,7 @@ import java.util.Date;
 @TableName("cm_article")
 //@Accessors(chain = true)  //lombok注解方法，，生成setter方法返回this（也就是返回的是对象），代替了默认的返回void，方便lambda编程
 public class Article  {
-    
+    @TableId
     private Long id;
     //标题
     private String title;
@@ -43,13 +45,13 @@ public class Article  {
     private Long viewCount;
     //是否允许评论 1是，0否
     private String isComment;
-    
+    @TableField(fill = FieldFill.INSERT)
     private Long createBy;
-    
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
-    
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
-    
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;

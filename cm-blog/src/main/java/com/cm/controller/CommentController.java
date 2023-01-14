@@ -1,9 +1,7 @@
 package com.cm.controller;
 
 import com.cm.domain.entity.Comment;
-import com.cm.domain.entity.SystemException;
-import com.cm.domain.enums.AppHttpCodeEnum;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.service.CommentService;
 import io.swagger.annotations.Api;
@@ -11,7 +9,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -2,7 +2,7 @@ package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cm.domain.entity.Comment;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.ResponseResult;
 
 /**

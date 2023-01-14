@@ -1,4 +1,4 @@
-package com.cm.domain.params;
+package com.cm.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

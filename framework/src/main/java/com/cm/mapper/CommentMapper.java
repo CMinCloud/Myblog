@@ -1,9 +1,8 @@
 package com.cm.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cm.domain.entity.Comment;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.cm.service;
 
 import com.alibaba.fastjson.JSON;
-import com.cm.domain.params.PageParam;
+import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.ResponseResult;
 import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
@@ -11,7 +11,6 @@ import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 
