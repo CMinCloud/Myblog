@@ -5,6 +5,11 @@
 
 <mapper namespace="com.cm.mapper.MenuMapper">
 
+    <resultMap id="ResultMap4MenuTree" type="com.cm.domain.vo.MenuVo4Role">
+        <result column="menu_name" property="label"></result>
+        <result column="parent_id" property="parentId"></result>
+    </resultMap>
+
 
     <select id="getAdminRouters" resultType="com.cm.domain.entity.Menu">
         select *
@@ -30,20 +35,54 @@
 
     <select id="getRoutersByUserId" resultType="com.cm.domain.entity.Menu">
         select *
-        from sys_menu
-        where id
+        from sys_menu m
+        where m.id
             in (
                   select menu_id
-                  from sys_role_menu
-                  WHERE role_id in (
+                  from sys_role_menu rm
+                  WHERE rm.role_id in (
                       select role_id
                       from sys_user_role
                       where user_id = #{userId}
                   )
               )
-          and del_flag = 0
-          and status = 0
-          and menu_type in ('C', 'M')
+          and m.del_flag = 0
+          and m.status = 0
+          and m.menu_type in ('C', 'M')
         order by order_num
+    </select>
+
+    <select id="getRouterCountByParentId" resultType="java.lang.Long">
+        select count(*)
+        from sys_menu
+        where parent_id = #{parentId};
+    </select>
+
+
+    <select id="selectMenuByParentId" resultType="com.cm.domain.vo.MenuVo4Role"
+            resultMap="ResultMap4MenuTree">
+        select id, menu_name, parent_id
+        from sys_menu
+        where parent_id = #{parentId}
+          and del_flag = 0
+        order by parent_id, order_num
+    </select>
+
+    <select id="getRoutersByRoleId" resultType="com.cm.domain.entity.Menu">
+        select *
+        from sys_menu m
+        where m.id
+            in (
+                  select menu_id
+                  from sys_role_menu rm
+                  WHERE rm.role_id = #{roleId}
+              )
+          and m.del_flag = 0
+          and m.status = 0
+        order by order_num
+    </select>
+
+    <select id="getAllIds" resultType="java.lang.Long">
+    select id from sys_menu;
     </select>
 </mapper>

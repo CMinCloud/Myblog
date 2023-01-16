@@ -99,7 +99,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         queryWrapper.like(StringUtils.hasText(name), Category::getName, name);
         queryWrapper.eq(StringUtils.hasText(status), Category::getStatus, status);
         queryWrapper.orderByAsc(Category::getId);
-        Page<Category> categoryPage = new Page<>();
+        Page<Category> categoryPage = new Page<>(categoryDto.getPageNum(), categoryDto.getPageSize());
         Page<Category> page = page(categoryPage, queryWrapper);
 //        获取分页查询结果
         List<Category> records = page.getRecords();
@@ -162,7 +162,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    public ResponseResult export(HttpServletResponse response) {
+    public void export(HttpServletResponse response) {
         try {
             //设置下载文件的请求头
             WebUtils.setDownLoadHeader("Category.xlsx", response);
@@ -172,11 +172,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             EasyExcel.write(response.getOutputStream(), CategoryVo.class).autoCloseStream(Boolean.FALSE).sheet("分类导出")
                     .doWrite(categoryVos);
         } catch (IOException e) {
+            response.reset();   //清空response中写入的数据
             //如果出现异常也要响应json
             ResponseResult result = ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
             WebUtils.renderString(response, JSON.toJSONString(result));
         }
-        return ResponseResult.okResult();
     }
 
     private List<CategoryVo> toCategoryVoList(List<Category> categoryList) {

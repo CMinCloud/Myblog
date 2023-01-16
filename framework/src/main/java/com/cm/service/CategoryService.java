@@ -31,6 +31,6 @@ public interface CategoryService extends IService<Category> {
 
     ResponseResult deleteById(List<Long> ids);
 
-    ResponseResult export(HttpServletResponse response);
+    void export(HttpServletResponse response);
 }
 

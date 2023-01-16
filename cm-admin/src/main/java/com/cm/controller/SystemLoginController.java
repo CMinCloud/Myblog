@@ -37,7 +37,7 @@ public class SystemLoginController {
         return loginService.login(user);
     }
 
-    @GetMapping("getRouters")
+    @GetMapping("/getRouters")
     public ResponseResult getRouters() {
         Long userId = SecurityUtils.getUserId();
         //查询menu 结果是tree的形式

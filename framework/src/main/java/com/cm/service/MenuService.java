@@ -1,6 +1,7 @@
 package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cm.domain.dto.MenuDto;
 import com.cm.domain.entity.Menu;
 import com.cm.domain.vo.MenuVo;
 import com.cm.domain.vo.ResponseResult;
@@ -17,5 +18,19 @@ import java.util.List;
 public interface MenuService extends IService<Menu> {
 
     List<MenuVo> selectRouterMenuTreeByUserId(Long userId);
+
+    ResponseResult list(MenuDto menuDto);
+
+    ResponseResult addMenu(Menu menu);
+
+    ResponseResult getMenuById(Long menuId);
+
+    ResponseResult updateMenu(Menu menu);
+
+    ResponseResult deleteMenu(Long id);
+
+    ResponseResult menuTree(Long parentId);
+
+    ResponseResult roleMenuTree(Long id);
 }
 

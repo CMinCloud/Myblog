@@ -27,4 +27,9 @@ public class SystemConstants
 
     public static final String LINK_COMMENT_TYPE = "1";
 
+//    判断登录用户是否是管理员
+    public static final String ADMIN = "1";
+
+    public static final String USER = "0";
+
 }

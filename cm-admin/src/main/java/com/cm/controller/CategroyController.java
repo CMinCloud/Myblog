@@ -45,12 +45,12 @@ public class CategroyController {
     }
 
     @DeleteMapping("/{ids}")
-    public ResponseResult deleteById(@PathVariable("ids") List<Long> ids){
+    public ResponseResult deleteById(@PathVariable("ids") List<Long> ids) {
         return categoryService.deleteById(ids);
     }
 
     @GetMapping("/export")
-    public ResponseResult exportCategories2Excel(HttpServletResponse response){
-        return categoryService.export(response);
+    public void exportCategories2Excel(HttpServletResponse response) {
+        categoryService.export(response);
     }
 }

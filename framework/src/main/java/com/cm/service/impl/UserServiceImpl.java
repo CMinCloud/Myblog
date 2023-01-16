@@ -134,7 +134,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     public static void main(String[] args) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encode = passwordEncoder.encode("158781");
+        String encode = passwordEncoder.encode("1234");
         System.out.println(encode);
     }
 }

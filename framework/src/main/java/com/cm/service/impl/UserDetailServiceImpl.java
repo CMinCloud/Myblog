@@ -2,6 +2,7 @@ package com.cm.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.cm.constants.SystemConstants;
 import com.cm.domain.entity.LoginUser;
 import com.cm.domain.entity.User;
 import com.cm.mapper.UserMapper;
@@ -49,13 +50,17 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
 //        根据userId获取用户权限
         List<String> permissions = null;
-        if (user.getId() == 1L) {
-            permissions = userService.getAdminPermissions();
-        } else {
-            permissions = userService.getPermissions(user.getId());
+        List<String> roles = null;
+        if (SystemConstants.ADMIN.equals(user.getType())) {
+            if (user.getId() == 1L) {
+//                超级管理员，拥有全部权限
+                permissions = userService.getAdminPermissions();
+            } else {
+//                普通管理员，查询对应权限
+                permissions = userService.getPermissions(user.getId());
+            }
+            roles = userService.getRoles(user.getId());
         }
-        List<String> roles = userService.getRoles(user.getId());
-//        todo 获取用户权限
         return new LoginUser(user, permissions, roles);
     }
 }

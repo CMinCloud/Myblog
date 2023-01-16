@@ -26,7 +26,7 @@ spring:
 mybatis-plus:
   configuration:
     # 日志(部署后应该关闭，防止crud日志打印过多)
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
   global-config:
     db-config:
       #      采用逻辑删除(这里的删除字段为del_Flag，对应实体类的属性名为delFlag)

@@ -48,6 +48,9 @@ public class LoginUser implements UserDetails {
         if (authorities != null) {
             return authorities;
         }
+        if (this.permissions == null) {     //对于普通用户，没有封装权限
+            return null;
+        }
         authorities = new ArrayList<>();
 //        封装用户权限为SimpleGrantedAuthority
         authorities = permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());

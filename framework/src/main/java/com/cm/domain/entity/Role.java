@@ -5,36 +5,45 @@ import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 标签(Tag)表实体类
+ * 角色信息表(Role)表实体类
  *
  * @author makejava
- * @since 2023-01-11 21:53:39
+ * @since 2023-01-15 21:15:54
  */
 @SuppressWarnings("serial")
 @Data
 @NoArgsConstructor
-@TableName("cm_tag")
-public class Tag {
-    @TableId
+@TableName("sys_role")
+public class Role {
+    //角色ID
     private Long id;
-    //标签名
-    private String name;
+    //角色名称
+    private String roleName;
+    //角色权限字符串
+    private String roleKey;
+    //显示顺序
+    private Integer roleSort;
+    //角色状态（0正常 1停用）
+    private String status;
+    //删除标志（0代表存在 1代表删除）
+    private String delFlag;
+    //创建者
     @TableField(fill = FieldFill.INSERT)
     private Long createBy;
+    //创建时间
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    //更新者
     private Long updateBy;
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    //更新时间
     private Date updateTime;
-    //删除标志（0代表未删除，1代表已删除）
-    private Integer delFlag;
     //备注
     private String remark;
 

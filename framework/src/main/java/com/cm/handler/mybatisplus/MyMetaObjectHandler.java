@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Slf4j
 @Component
+//Mybatis属性自动注入
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
