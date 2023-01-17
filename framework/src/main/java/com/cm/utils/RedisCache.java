@@ -232,6 +232,12 @@ public class RedisCache {
         }
     }
 
+    //    讲单篇文章的浏览量写入缓存
+    public void setViewCount2Redis(Article article) {
+        String key = "articleViewCount";
+        redisTemplate.opsForZSet().add(key, article.getId(), article.getViewCount());
+    }
+
     //    从redis中获取当前文章的浏览量
     public Long getSetSortedSetById(Long id) {
         String key = "articleViewCount";

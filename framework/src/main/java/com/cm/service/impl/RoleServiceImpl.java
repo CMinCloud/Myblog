@@ -121,6 +121,31 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return ResponseResult.okResult();
     }
 
+    /**
+     * 删除对应角色:逻辑删除，所以不用删除其权限列表
+     *
+     * @param roleId
+     * @return
+     */
+    @Override
+    public ResponseResult deleteRole(Long roleId) {
+        boolean removed = removeById(roleId);
+        if (removed) {
+            return ResponseResult.okResult();
+        } else {
+            return ResponseResult.errorResult(555, "删除角色失败");
+        }
+    }
+
+    @Override
+    public ResponseResult listAllRole() {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Role::getStatus, SystemConstants.STATUS_NORMAL);
+        List<Role> roles = list(queryWrapper);
+        List<RoleVo> voList = BeanCopyUtils.copyBeanList(roles, RoleVo.class);
+        return ResponseResult.okResult(voList);
+    }
+
 
     private List<RoleVo> toRoleVoList(List<Role> roleList) {
         return BeanCopyUtils.copyBeanList(roleList, RoleVo.class);

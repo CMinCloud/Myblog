@@ -134,23 +134,31 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return ResponseResult.okResult();
     }
 
+    /**
+     * 发布文章：
+     * 1、保存到文章表article中
+     * 2、对于文章标签，存储到article_tag中间表中
+     * 3、将浏览量存入缓存
+     * @param articleDto
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult publishArticle(ArticleDto articleDto) {
 //        检查是否输入了title，summary，content
         if (checkIsLegal(articleDto)) {
             Article article = BeanCopyUtils.copyBean(articleDto, Article.class);
-//            对于tags，需要存到对应的关联表当中去
             save(article);
 //            再将刚刚新增的article查出来，获取id
 //            todo:如果文章还是草稿，就不用将article和tag的关系插入表中
             Long articleId = article.getId();
             List<Long> tags = articleDto.getTags();
-
             List<ArticleTag> articleTags = tags.stream()
                     .map(tagId -> new ArticleTag(articleId, tagId)).collect(Collectors.toList());
 //            新增article-tag的映射
             articleTagService.saveBatch(articleTags);
+//            将浏览量存入缓存
+            redisCache.setViewCount2Redis(article);
         }
         return ResponseResult.okResult();
     }
@@ -183,7 +191,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ResponseResult updateArticle(Article article) {
         try {
-            boolean updated = updateById(article);
+            updateById(article);
         } catch (Exception e) {
             throw new SystemException(AppHttpCodeEnum.SYSTEM_ERROR);
         }
@@ -214,6 +222,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return BeanCopyUtils.copyBeanList(articleList, ArticleVo.class);
     }
 
+    /**
+     * 检查参数列表，是否输入了内容、简介，标题等关键字
+     * @param articleDto
+     * @return
+     */
     private Boolean checkIsLegal(ArticleDto articleDto) {
         if (!StringUtils.hasText(articleDto.getContent())
                 || !StringUtils.hasText(articleDto.getSummary())

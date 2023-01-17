@@ -10,6 +10,7 @@ import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.RoutersVo;
 import com.cm.service.LoginService;
 import com.cm.service.MenuService;
+import com.cm.service.UserService;
 import com.cm.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -26,6 +27,15 @@ public class SystemLoginController {
 
     @Autowired
     private MenuService menuService;
+
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/getInfo")
+    public ResponseResult getInfo() {
+        return userService.SystemUserInfo();
+    }
 
     @PostMapping("/user/login")
     @LogAnnotation(module = "管理员登录模块", operation = "登录操作")

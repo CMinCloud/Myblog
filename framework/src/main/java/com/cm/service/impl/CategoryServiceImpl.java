@@ -59,8 +59,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public ResponseResult getCategoryList() {
 //        一：使用自己写的sql完成
 //        List<Category> categoryList = categoryMapper.selectCategoryList();
-
-
 //        二：使用MP的接口实现
 //            1、查询 已发布的文章id 的categoryId
         LambdaQueryWrapper<Article> articleQueryWrapper = new LambdaQueryWrapper<>();

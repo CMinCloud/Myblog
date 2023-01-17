@@ -2,7 +2,9 @@ package com.cm.service;
 
 import com.alibaba.fastjson.JSON;
 import com.cm.domain.dto.PageParam;
+import com.cm.domain.entity.Article;
 import com.cm.domain.vo.ResponseResult;
+import com.cm.utils.RedisCache;
 import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.Region;
@@ -11,6 +13,7 @@ import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +31,7 @@ public class serviceTest {
     private CategoryService categoryService;
 
     @Autowired
+    @Qualifier("BlogLoginService")
     private LoginService loginService;
 
     @Autowired
@@ -89,8 +93,14 @@ public class serviceTest {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+    }
 
-
+    @Autowired
+    private RedisCache redisCache;
+    @Test
+    void refreshRedis(){
+        Article article = articleService.getById(9);
+        redisCache.setViewCount2Redis(article);
     }
 
 
