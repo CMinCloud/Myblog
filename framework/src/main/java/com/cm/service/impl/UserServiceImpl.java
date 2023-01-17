@@ -1,15 +1,20 @@
 package com.cm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.cm.domain.entity.LoginUser;
-import com.cm.domain.entity.SystemException;
-import com.cm.domain.entity.User;
+import com.cm.constants.SystemConstants;
+import com.cm.domain.dto.PageUsersDto;
+import com.cm.domain.dto.UserDto4Status;
+import com.cm.domain.entity.*;
 import com.cm.domain.enums.AppHttpCodeEnum;
-import com.cm.domain.vo.ResponseResult;
-import com.cm.domain.vo.SystemUserVo;
-import com.cm.domain.vo.userInfoVo;
+import com.cm.domain.vo.*;
 import com.cm.mapper.UserMapper;
+import com.cm.mapper.UserRoleMapper;
+import com.cm.service.RoleService;
+import com.cm.service.UserRoleService;
 import com.cm.service.UserService;
 import com.cm.utils.BeanCopyUtils;
 import com.cm.utils.SecurityUtils;
@@ -34,6 +39,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public ResponseResult userInfo() {
@@ -100,6 +113,116 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return baseMapper.getSystemRoles(id);
     }
 
+    /**
+     * 后台查询用户列表
+     *
+     * @param pageUsersDto
+     * @return
+     */
+    @Override
+    public ResponseResult pageList(PageUsersDto pageUsersDto) {
+        String status = pageUsersDto.getStatus();
+        String userName = pageUsersDto.getUserName();
+        String phonenumber = pageUsersDto.getPhonenumber();
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+//        判断参数是否不为空：根据用户名进行模糊搜索，进行手机号搜索，进行状态查询
+        queryWrapper.like(StringUtils.hasText(userName), User::getUserName, userName);
+        queryWrapper.eq(StringUtils.hasText(status), User::getStatus, status);
+        queryWrapper.eq(StringUtils.hasText(phonenumber), User::getPhonenumber, phonenumber);
+        Page<User> userPage = new Page<>(pageUsersDto.getPageNum(), pageUsersDto.getPageSize());
+        Page<User> page = page(userPage, queryWrapper);
+        List<UserListVo> userVoList = BeanCopyUtils.copyBeanList(page.getRecords(), UserListVo.class);
+//        封装为pageVo对象
+        PageVo pageVo = new PageVo(userVoList, page.getTotal());
+        return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 新增后台用户，同时可以直接关联角色
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult newUser(User user) {
+        //        对数据进行非空判断
+        registerCheck(user);
+//        加密密码:使用security中的PasswordEncoder进行加密
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodePassword);
+        boolean isSaved = save(user);
+
+        if (isSaved) {
+//            如果关联了角色，添加到角色用户关联表
+            List<Long> roleIds = user.getRoleIds();
+            if (roleIds.size() != 0) {
+                for (Long roleId : roleIds) {
+                    userRoleService.save(new UserRole(user.getId(), roleId));
+                }
+            }
+        }
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult delete(Long userId) {
+        boolean removed = removeById(userId);
+        if (removed)
+            return ResponseResult.okResult();
+        else
+            return ResponseResult.errorResult(555, "用户删除失败");
+    }
+
+    @Override
+    public ResponseResult userDetail(Long userId) {
+//        查询用户详细信息
+        User user = getById(userId);
+//        查询该用户的角色：一个用户可以拥有多个角色
+        List<Long> roleIds = userRoleMapper.listRoleIdsByUserId(userId);
+//          查询所有角色表
+        List<Role> roles = roleService.list();
+        UserDetail4Update userDetailVo = new UserDetail4Update(user, roles, roleIds);
+        return ResponseResult.okResult(userDetailVo);
+    }
+
+    /**
+     * 在后台修改用户，可以修改用户的关联角色
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseResult updateUserBackGround(User user) {
+//        更新用户表
+        updateById(user);
+//        更新用户角色关联表：先删除所有关联的角色，再重新添加
+        QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", user.getId());
+//        先删除
+        boolean isRemoved = userRoleService.remove(queryWrapper);
+        if (isRemoved) {
+//            再添加
+            List<Long> roleIds = user.getRoleIds();
+            for (Long roleId : roleIds) {
+                userRoleService.save(new UserRole(user.getId(), roleId));
+            }
+        }
+        return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult changeStatus(UserDto4Status userDto) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", userDto.getUserId()).set("status", userDto.getStatus());
+        boolean updated = update(updateWrapper);
+        if (updated) {
+            return ResponseResult.okResult();
+        } else
+            return ResponseResult.errorResult(555, "状态更新失败");
+    }
+
     public boolean registerCheck(User user) {
         String userName = user.getUserName();
         String password = user.getPassword();
@@ -128,6 +251,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq(User::getNickName, nickName);
         if (count(queryWrapper) != 0) {
             throw new SystemException(AppHttpCodeEnum.NICKNAME_EXIST);
+        }
+        queryWrapper.clear();
+        queryWrapper.eq(User::getPhonenumber, user.getPhonenumber());
+        if (count(queryWrapper) != 0) {
+            throw new SystemException(AppHttpCodeEnum.PHONENUMBER_EXIST);
+        }
+        queryWrapper.clear();
+        queryWrapper.eq(User::getEmail, email);
+        if (count(queryWrapper) != 0) {
+            throw new SystemException(AppHttpCodeEnum.EMAIL_EXIST);
         }
         return true;
     }

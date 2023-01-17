@@ -2,6 +2,7 @@ package com.cm.domain.entity;
 
 import java.util.Date;
 import java.io.Serializable;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 /**
  * 用户表(User)表实体类
  *
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @TableName("sys_user")
-public class User  {
+public class User {
     //主键
     @TableId
     private Long id;
@@ -42,17 +44,23 @@ public class User  {
     //头像
     private String avatar;
     //创建人的用户id
+    @TableField(fill = FieldFill.INSERT)
     private Long createBy;
     //创建时间
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     //更新人
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
     //更新时间
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
+
+    //    用于接收后台新增用户时
+    @TableField(exist = false)
+    private List<Long> roleIds;
 
 }
 

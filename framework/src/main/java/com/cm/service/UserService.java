@@ -1,6 +1,8 @@
 package com.cm.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cm.domain.dto.PageUsersDto;
+import com.cm.domain.dto.UserDto4Status;
 import com.cm.domain.entity.User;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.domain.vo.userInfoVo;
@@ -28,5 +30,17 @@ public interface UserService extends IService<User> {
     List<String> getAdminPermissions();
 
     List<String> getRoles(Long id);
+
+    ResponseResult pageList(PageUsersDto pageUsersDto);
+
+    ResponseResult newUser(User user);
+
+    ResponseResult delete(Long userId);
+
+    ResponseResult userDetail(Long userId);
+
+    ResponseResult updateUserBackGround(User user);
+
+    ResponseResult changeStatus( UserDto4Status userDto);
 }
 
