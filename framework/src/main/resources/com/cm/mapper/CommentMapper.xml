@@ -23,7 +23,7 @@
         </where>
     </select>
 
-<!--    #使用Count(*)来查询总数  ：InnoDB引擎并不会把字段全部取出来，而是专门做了优化-->
+<!--    #使用Count(*)来查询总数：InnoDB引擎并不会把字段全部取出来，而是专门做了优化  -->
     <select id="getCommentTotal" resultType="java.lang.Long">
         select count(*)
         from cm_comment

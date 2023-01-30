@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cm.domain.entity.Comment;
 import com.cm.domain.entity.SystemException;
+import com.cm.domain.entity.User;
 import com.cm.domain.enums.AppHttpCodeEnum;
 import com.cm.domain.dto.PageParam;
 import com.cm.domain.vo.CommentVo;
@@ -76,7 +77,6 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
 
-
     //  这里只查询二级评论，其实b站的评论列表也是最多到二级评论
     private List<CommentVo> getChildren(Long rootId) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
@@ -93,8 +93,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         List<CommentVo> commentVos = BeanCopyUtils.copyBeanList(list, CommentVo.class);
 //        补充属性，toCommentUserName，username，children
         for (CommentVo commentVo : commentVos) {
+            User user = userService.getById(commentVo.getCreateBy());
 //                补充username属性
-            commentVo.setUsername(userService.getById(commentVo.getCreateBy()).getNickName());
+            commentVo.setUsername(user.getNickName());
+            commentVo.setAvatar(user.getAvatar());
 //                补充toCommentUserName属性
             if (!COMMENT_ROOT.equals(commentVo.getToCommentUserId().toString())) {     //不为根评论
                 commentVo.setToCommentUserName(userService.getById(commentVo.getToCommentUserId()).getNickName());
