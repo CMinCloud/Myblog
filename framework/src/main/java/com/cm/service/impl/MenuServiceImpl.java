@@ -15,6 +15,7 @@ import com.cm.mapper.MenuMapper;
 import com.cm.mapper.RoleMenuMapper;
 import com.cm.service.MenuService;
 import com.cm.utils.BeanCopyUtils;
+import com.cm.utils.RedisCache;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -40,9 +41,25 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Autowired
     private RoleMenuMapper roleMenuMapper;
 
+    @Autowired
+    private RedisCache redisCache;
 
+
+    /**
+     * 获取管理员的菜单路由：常访问，变动小
+     * 查询方式：从数据库中查询
+     *
+     * @param userId
+     * @return
+     */
     @Override
     public List<MenuVo> selectRouterMenuTreeByUserId(Long userId) {
+        String redisKey = RedisCache.AdminRouterKey + userId;
+        //        先去redis中查看
+        List<MenuVo> result = redisCache.getCacheObject(redisKey);
+        if (!Objects.isNull(result)) {
+            return result;
+        }
         List<Menu> routers;
         if (userId == 1L) {
 //            查询管理员的菜单面板
@@ -55,6 +72,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             setChildren(menuVo);
             return menuVo;
         }).collect(Collectors.toList());
+//        将结果存入Redis
+        redisCache.setCacheObject(redisKey, menuVoList);
 //        根据id查询系统用户的菜单面板
         return menuVoList;
     }
@@ -164,9 +183,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     private List<Long> getCheckedMenuIds(Long roleId) {
         List<Long> ids;
-        if(roleId == 1L){
-             ids = baseMapper.getAllIds();
-        }else {
+        if (roleId == 1L) {
+            ids = baseMapper.getAllIds();
+        } else {
             ids = roleMenuMapper.getMenuIdByRoleId(roleId);
         }
         return ids;

@@ -24,6 +24,9 @@ public class RedisCache {
     //    用于存入到缓存中的key
     public static final String ViewCountKey = "articleViewCount";
 
+    //    用于将管理员路由缓存的key
+    public static final String AdminRouterKey = "AdminRouters:";
+
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
