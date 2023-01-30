@@ -265,6 +265,7 @@ public class RedisCache {
             String value = typedTuple.getValue().toString();//文章id
             Double score = typedTuple.getScore();//浏览量
             UpdateWrapper<Article> updateWrapper = new UpdateWrapper<>();
+//            根据主键来修改，防止行级锁升级为表级锁
             updateWrapper.eq("id", Long.valueOf(value)).set("view_count", score.longValue());
             articleService.update(updateWrapper);
         }
