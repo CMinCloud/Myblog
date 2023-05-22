@@ -21,7 +21,11 @@ public enum AppHttpCodeEnum {
     EMAIL_NOT_NULL(512, "邮箱不能为空"),
     NICKNAME_EXIST(513, "昵称已存在"),
 
-    KEYWORDS_NOT_NULL(555, "关键字不能为空");
+    KEYWORDS_NOT_NULL(555, "关键字不能为空"),
+    USER_NOT_EXIST(556,"该用户已注销"),
+    REDUPLICATED_FOLLOW(557,"不能重复关注"),
+    FOLLOWSELF(558,"不能关注自己哦~"),
+    NO_FOLLOW(559,"暂无关注的博主~");
 
 
     int code;

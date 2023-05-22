@@ -27,6 +27,12 @@ public class RedisCache {
     //    用于将管理员路由缓存的key
     public static final String AdminRouterKey = "AdminRouters:";
 
+    //    添加粉丝id到博主的缓存中
+    public static final String BlogFansKey = "BlogFans:";
+
+    //    添加博客id到用户的缓存中
+    public static final String BlogFeedKey = "BlogFeed:";
+
     /**
      * 缓存基本的对象，Integer、String、实体类等
      *
@@ -258,8 +264,8 @@ public class RedisCache {
 
     //        将缓存中的浏览量同步到数据库
     public void Synchronize2Database() {
-        String key = "articleViewCount";
-        Cursor cursor = redisTemplate.opsForZSet().scan(key, ScanOptions.NONE);
+        Cursor cursor = redisTemplate.opsForZSet().scan(ViewCountKey, ScanOptions.NONE);
+//        这里对redis中每一篇文章都进行遍历，效果不太好
         while (cursor.hasNext()) {
             ZSetOperations.TypedTuple typedTuple = (ZSetOperations.TypedTuple) cursor.next();
             String value = typedTuple.getValue().toString();//文章id
@@ -269,5 +275,46 @@ public class RedisCache {
             updateWrapper.eq("id", Long.valueOf(value)).set("view_count", score.longValue());
             articleService.update(updateWrapper);
         }
+    }
+
+    public void addFans2Redis(Long userId, Long fansId) {
+        String key = BlogFansKey + userId;
+        redisTemplate.opsForSet().add(key, fansId);
+    }
+
+    public void deleteFans4Redis(Long userId, Long fansId) {
+        String key = BlogFansKey + userId;
+        redisTemplate.opsForSet().remove(key, fansId);
+    }
+
+    //    使用zset的格式，增加一个更新时间
+    public void addFollowArticle2Redis(Long userId, Long articleId) {
+        String key = BlogFeedKey + userId;
+        redisTemplate.opsForZSet().add(key, articleId, System.currentTimeMillis());
+    }
+
+    public Set getFollowArticle4Redis(Long userId) {
+        String key = BlogFeedKey + userId;
+//        redisTemplate.opsForZSet().reverseRange(key, 0, 5); // 倒叙查询出五个
+        Cursor cursor = redisTemplate.opsForZSet().scan(key, ScanOptions.NONE);
+//        这里对redis中每一篇文章都进行遍历，效果不太好
+        Set<String> articleIds = new HashSet<>();
+        while (cursor.hasNext()) {
+            ZSetOperations.TypedTuple typedTuple = (ZSetOperations.TypedTuple) cursor.next();
+            articleIds.add(typedTuple.getValue().toString());//文章id
+//            根据主键来修改，防止行级锁升级为表级锁
+        }
+        return articleIds;
+    }
+
+    /**
+     * 取关后，将被关注者的所有文章id查出来，删除原粉丝推送缓存中的所有文章
+     *
+     * @param userId
+     * @param articleIds
+     */
+    public void deleteFollowArticle4Redis(Long userId, List<Long> articleIds) {
+        String key = BlogFeedKey + userId;
+        redisTemplate.opsForZSet().remove(key, articleIds);
     }
 }

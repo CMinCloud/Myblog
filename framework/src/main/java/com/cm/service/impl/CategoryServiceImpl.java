@@ -48,6 +48,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Autowired
     private ArticleService articleService;
 
+
 /*
 //    使用方法注入依赖代替使用@Autowire注入
     public ArticleService articleService(){

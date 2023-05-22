@@ -3,6 +3,7 @@ package com.cm.config;
 import com.cm.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -42,9 +43,12 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
-                .antMatchers("/login").anonymous()
+                .antMatchers("/login").anonymous()      // 针对security的过滤器链
                 .antMatchers("/logout").authenticated()     //认证之后才能访问
                 .antMatchers("/user/userInfo").authenticated()
+                .antMatchers("/follow").authenticated()
+                .antMatchers(HttpMethod.POST,"/article").authenticated()    //发表文章
+
                 // 除上面外的所有请求全部不需要认证即可访问
                 .anyRequest().permitAll();
 

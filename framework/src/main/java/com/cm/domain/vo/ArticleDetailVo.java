@@ -25,4 +25,11 @@ public class ArticleDetailVo {
     //访问量
     private Long viewCount;
 
+    //    文章作者
+    private String author;
+
+
+    //    文章作者id
+    private Long createBy;
+
 }

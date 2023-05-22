@@ -6,6 +6,7 @@ import com.cm.domain.entity.Article;
 import com.cm.domain.vo.ResponseResult;
 import com.cm.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseResult deleteById(List<Long> ids){
+    public ResponseResult deleteById(@PathVariable("id") List<Long> ids){
         return articleService.deleteById(ids);
     }
 }

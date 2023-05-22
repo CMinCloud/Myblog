@@ -21,13 +21,11 @@ import java.util.Objects;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
-
     @Autowired
     private UserService userService;
 
 
 //    authenticate进行用户认证(会调用userDetailService接口来进行认证)
-
     /**
      * 注意这里返回值是UserDetails，所以我们还要重写UserDetails这个接口
      *

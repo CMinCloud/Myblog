@@ -103,6 +103,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Transactional(rollbackFor = Exception.class)
     public ResponseResult updateRole(addRoleDto roleDto) {
         UpdateWrapper<Role> updateWrapper = new UpdateWrapper<>();
+
         updateWrapper.eq("id", roleDto.getId())
                 .set("role_name", roleDto.getRoleName())
                 .set("role_key", roleDto.getRoleKey())
@@ -112,7 +113,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         boolean updated = update(updateWrapper);
         if (updated) {
 //            修改role_menu中间表：先删除全部，再新增
-            roleMenuService.removeBatchByIds(roleDto.getMenuIds());
+            roleMenuService.remove(new QueryWrapper<RoleMenu>().eq("role_id", roleDto.getId()));
             for (Long menuId : roleDto.getMenuIds()) {
 //                最好检查是否未修改
                 roleMenuService.save(new RoleMenu(roleDto.getId(), menuId));

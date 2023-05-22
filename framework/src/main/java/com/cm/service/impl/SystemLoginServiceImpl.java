@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service("SystemLoginService")
 public class SystemLoginServiceImpl implements LoginService {
@@ -52,7 +53,7 @@ public class SystemLoginServiceImpl implements LoginService {
         map.put("token", jwt);
 //        这里缓存存入loginUser的原因:包含完整的用户信息+用户权限
 //        每次请求都需要判定权限,所以封装在缓存中
-        redisCache.setCacheObject("AdminLogin:" + userId, loginUser);
+        redisCache.setCacheObject("AdminLogin:" + userId, loginUser, 1, TimeUnit.DAYS);
         return ResponseResult.okResult(map);     //返回token值和用户信息
     }
 

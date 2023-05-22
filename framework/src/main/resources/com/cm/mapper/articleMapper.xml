@@ -10,4 +10,10 @@
         insert into cm_article_tag
         values (#{articleId}, #{tagId});
     </insert>
+
+<!--    <select id="followedArticleList" resultType="com.cm.domain.entity.Article">
+        select * from cm_article
+        where create_by in
+        (#{followedIds}) and del_flag = 0;
+    </select>-->
 </mapper>

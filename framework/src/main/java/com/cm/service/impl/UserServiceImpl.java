@@ -18,6 +18,7 @@ import com.cm.service.UserRoleService;
 import com.cm.service.UserService;
 import com.cm.utils.BeanCopyUtils;
 import com.cm.utils.SecurityUtils;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * 用户表(User)表服务实现类
@@ -81,6 +84,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        加密密码:使用security中的PasswordEncoder进行加密
         String encodePassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodePassword);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
 //        存入数据库
         save(user);
         return ResponseResult.okResult();
@@ -121,6 +126,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public ResponseResult pageList(PageUsersDto pageUsersDto) {
+
+//        ExecutorService pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.SECONDS,
+//                new ArrayBlockingQueue<>(1), Executors.defaultThreadFactory(), new ThreadPoolExecutor.DiscardPolicy());
         String status = pageUsersDto.getStatus();
         String userName = pageUsersDto.getUserName();
         String phonenumber = pageUsersDto.getPhonenumber();
@@ -150,9 +158,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         registerCheck(user);
 //        加密密码:使用security中的PasswordEncoder进行加密
         String encodePassword = passwordEncoder.encode(user.getPassword());
+//      在后台添加的用户，需要声明创建信息
+        Long adminId = SecurityUtils.getLoginUser().getUser().getId();
         user.setPassword(encodePassword);
+        user.setCreateBy(adminId);
+        user.setUpdateTime(new Date());
+        user.setCreateTime(new Date());
+        user.setUpdateBy(adminId);
         boolean isSaved = save(user);
-
         if (isSaved) {
 //            如果关联了角色，添加到角色用户关联表
             List<Long> roleIds = user.getRoleIds();
@@ -201,13 +214,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         QueryWrapper<UserRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", user.getId());
 //        先删除
-        boolean isRemoved = userRoleService.remove(queryWrapper);
-        if (isRemoved) {
-//            再添加
-            List<Long> roleIds = user.getRoleIds();
-            for (Long roleId : roleIds) {
-                userRoleService.save(new UserRole(user.getId(), roleId));
-            }
+        userRoleService.remove(queryWrapper);
+//        再添加
+        List<Long> roleIds = user.getRoleIds();
+        for (Long roleId : roleIds) {
+            userRoleService.save(new UserRole(user.getId(), roleId));
+
         }
         return ResponseResult.okResult();
     }
@@ -219,8 +231,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         boolean updated = update(updateWrapper);
         if (updated) {
             return ResponseResult.okResult();
-        } else
+        } else {
             return ResponseResult.errorResult(555, "状态更新失败");
+        }
     }
 
     public boolean registerCheck(User user) {

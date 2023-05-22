@@ -19,5 +19,10 @@ public class CategoryController {
         return categoryService.getCategoryList();
     }
 
+    @GetMapping("/listAllCategory")
+    public ResponseResult listAllCategories() {
+        return categoryService.listAllCategories();
+    }
+
 
 }

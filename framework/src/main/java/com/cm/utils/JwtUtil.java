@@ -89,7 +89,7 @@ public class JwtUtil {
     }
     
     /**
-     * 解析
+     * 解析获得载荷部分
      *
      * @param jwt
      * @return
@@ -106,14 +106,28 @@ public class JwtUtil {
 
 
     public static void main(String[] args) throws Exception {
-//        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjYWM2ZDVhZi1mNjVlLTQ0MDAtYjcxMi0zYWEwOGIyOTIwYjQiLCJzdWIiOiJzZyIsImlzcyI6InNnIiwiaWF0IjoxNjM4MTA2NzEyLCJleHAiOjE2MzgxMTAzMTJ9.JVsSbkP94wuczb4QryQbAke3ysBDIL5ou8fWsbt_ebg";
-//        Claims claims = parseJWT(token);
-//        System.out.println(claims);
-        String jwt = JwtUtil.createJWT("1");
-        Claims claims = parseJWT(jwt);
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3NGMxZmFkOTVlNzg0MzlmOWQxMzU4YmJiNjY3ODVlNCIsInN1YiI6IjEiLCJpc3MiOiJjbSIsImlhdCI6MTY3NzQ5OTY1NSwiZXhwIjoxNjc3NTg2MDU1fQ.7Rm4FRwNXrm_jIC_o20TYcL6RZihin_EsoPHqq8L9dY";
+        Claims claims = parseJWT(token);
+        System.out.println(claims);
         System.out.println(claims.getSubject());
-        System.out.println(jwt);
+        System.out.println(claims.getIssuer());
+        System.out.println("----------------");
 
+        System.out.println("密钥:"+generalKey());
+        System.out.println(generalKey());
+        System.out.println("获得头部"+Jwts.parser().
+                setSigningKey(generalKey()).
+                parseClaimsJws(token).getHeader());
+        System.out.println("获得载荷"+Jwts.parser().
+                setSigningKey(generalKey()).
+                parseClaimsJws(token).getBody());
+        System.out.println("获得签名"+Jwts.parser().
+                setSigningKey(generalKey()).
+                parseClaimsJws(token).getSignature());
+//        String jwt = JwtUtil.createJWT("1");
+//        Claims claims = parseJWT(jwt);
+//        System.out.println(claims.getSubject());
+//        System.out.println(jwt);
     }
 
 

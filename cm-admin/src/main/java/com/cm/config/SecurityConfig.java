@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)      //使用该注解后开启Security的注解使用
 public class SecurityConfig {
 
-
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
@@ -50,12 +49,12 @@ public class SecurityConfig {
 //                .antMatchers("/content/category/export").hasAuthority("content:category:export")
                 .anyRequest().authenticated();
 
+        //        在用户登录过滤器之前进行过滤校验
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
 //        引入security的自定义异常
         http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler);
-
-//        在用户登录过滤器之前进行过滤校验
-        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.logout().disable();        //关闭默认注销功能，否则自定义的logout可能退出失败
         //允许跨域

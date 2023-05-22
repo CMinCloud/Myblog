@@ -19,6 +19,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+
     @GetMapping("/commentList")
     public ResponseResult commentList(Long articleId, Integer pageNum, Integer pageSize) {
         PageParam commentParam = new PageParam(articleId, pageNum, pageSize, "0");

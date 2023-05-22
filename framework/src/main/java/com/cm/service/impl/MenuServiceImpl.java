@@ -55,11 +55,11 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public List<MenuVo> selectRouterMenuTreeByUserId(Long userId) {
         String redisKey = RedisCache.AdminRouterKey + userId;
-        //        先去redis中查看
+/*        //        先去redis中查看
         List<MenuVo> result = redisCache.getCacheObject(redisKey);
-        if (!Objects.isNull(result)) {
+        if (result.size() != 0) {
             return result;
-        }
+        }*/
         List<Menu> routers;
         if (userId == 1L) {
 //            查询管理员的菜单面板
@@ -147,8 +147,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         if (Objects.isNull(menu.getParentId())
                 || !StringUtils.hasText(menu.getMenuName())
                 || Objects.isNull(menu.getOrderNum())
-                || !StringUtils.hasText(menu.getPath()))
+                || !StringUtils.hasText(menu.getPath())) {
             throw new SystemException(AppHttpCodeEnum.KEYWORDS_NOT_NULL);
+        }
+
         return Boolean.TRUE;
     }
 

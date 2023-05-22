@@ -18,8 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.concurrent.TimeUnit;
 
 @Service("BlogLoginService")
 public class LoginServiceImpl implements LoginService {
@@ -33,6 +33,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult login(User user) {
+
 //        1、创建authenticationManager的入参
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                 = new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword());
@@ -45,32 +46,31 @@ public class LoginServiceImpl implements LoginService {
 //        如果认证通过了，使用userid生成一个jwt，jwt存入ResponseResult中
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         String userId = loginUser.getUser().getId().toString();
-
         String jwt = JwtUtil.createJWT(userId);
-//        将完整的用户信息存入redis， userid作为key
-        Map<String, String> map = new HashMap<>();
-        map.put("token", jwt);
-//        这里缓存存入loginUser的原因:包含完整的用户信息+用户权限
-//        每次请求都需要判定权限,所以封装在缓存中
-        redisCache.setCacheObject("BlogLogin:" + userId, loginUser);
-
+        /**
+         * 将完整的用户信息存入redis， userid作为key
+         * 这里缓存存入loginUser的原因:包含完整的用户信息+用户权限
+         * 每次请求都需要判定权限,所以封装在缓存中，过期实时间为1天，与token过期时间相同
+         */
+        redisCache.setCacheObject("BlogLogin:" + userId, loginUser, 1, TimeUnit.DAYS);
 //        返回BlogUserLoginVo对象
         userInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), userInfoVo.class);
-        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfo,jwt);
-        return new ResponseResult(200, "登录认证成功!", blogUserLoginVo);     //返回token值和用户信息
+        BlogUserLoginVo blogUserLoginVo = new BlogUserLoginVo(userInfo, jwt);
+        //返回token值和用户信息
+        return new ResponseResult(200, "登录认证成功!", blogUserLoginVo);
     }
 
     @Override
     public ResponseResult logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null){
+        if (authentication == null) {
             throw new SystemException(AppHttpCodeEnum.NEED_LOGIN);
         }
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //获取userid
         Long userId = loginUser.getUser().getId();
         //删除redis中的用户信息
-        redisCache.deleteObject("blogLogin_"+userId);
+        redisCache.deleteObject("BlogLogin:" + userId);
         return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
     }
 }
